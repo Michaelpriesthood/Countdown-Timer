@@ -12,4 +12,6 @@
     <string name="stop_image">stop_image</string>
     <string name="pause_image">pause_image</string>
     <string name="play_image">play_image</string>
+    <string name="countdown_timer">Countdown Timer</string>
+    <string name="logo">logo</string>
 </resources>

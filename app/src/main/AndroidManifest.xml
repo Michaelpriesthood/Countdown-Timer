@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.techmedia.countdowntimer" >
+    package="com.techmedia.countdowntimer">
 
     <application
         android:allowBackup="true"
@@ -8,11 +8,20 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CountdownTimer" >
+        android:theme="@style/Theme.CountdownTimer">
+        <receiver
+            android:name=".TimerExpiredReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SplashActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CountdownTimer.NoActionBar" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.CountdownTimer.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

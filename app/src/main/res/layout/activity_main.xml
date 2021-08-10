@@ -16,14 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="Countdown Timer"
-            app:titleTextAppearance="@style/CustomizeText" />
+            app:titleTextAppearance="@style/CustomizeText"
+            />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_main"/>
+    <include
+        android:id="@+id/progress_layout"
+        layout="@layout/content_main"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_play"
+        android:id="@+id/fab_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
