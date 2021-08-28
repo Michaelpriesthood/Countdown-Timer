@@ -5,14 +5,20 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.techmedia.countdowntimer.databinding.ActivityMainBinding
+import com.techmedia.countdowntimer.util.NotificationUtil
 import com.techmedia.countdowntimer.util.PrefUtil
+import nl.dionsegijn.konfetti.models.Shape
+import nl.dionsegijn.konfetti.models.Size
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -86,7 +92,12 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         initTimer()
         removeAlarm(this)
-        //TODO: hide notification
+        // hide notification
+        NotificationUtil.hideTimerNotification(this)
+//        Update the buttons and the countdownUI whenever the user navigate back to the app
+        updateButtons()
+        updateCountdownUI()
+
     }
 
     private fun initTimer() {
@@ -109,11 +120,9 @@ class MainActivity : AppCompatActivity() {
         }
         if (secondsRemaining <= 0) {
             onTimerFinished()
-        }
-        else if (timerState == TimerState.RUNNING) {
+        } else if (timerState == TimerState.RUNNING) {
             startTimer()
             updateButtons()
-
             updateCountdownUI()
         }
     }
@@ -123,10 +132,13 @@ class MainActivity : AppCompatActivity() {
         if (timerState == TimerState.RUNNING) {
             timer.cancel()
             val wakeUpTime = setAlarm(this, nowSeconds, secondsRemaining)
-            //TODO: show notification
+            //show notification
+            NotificationUtil.showTimerRunning(this, wakeUpTime)
+
 
         } else if (timerState == TimerState.PAUSED) {
-            //TODO: show notification
+            //show notification
+            NotificationUtil.showTimerPaused(this)
         }
 
         PrefUtil.setPreviousTimerLengthSeconds(timerLengthSeconds, this)
@@ -136,7 +148,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun onTimerFinished() {
         timerState = TimerState.STOPPED
-
         setNewTimerLength()
         binding.progressLayout.progressCountdown.progress = 0
 
@@ -153,7 +164,13 @@ class MainActivity : AppCompatActivity() {
                 secondsRemaining = millisUntilFinished / 1000
                 updateCountdownUI()
             }
-            override fun onFinish() = onTimerFinished()
+
+            override fun onFinish() {
+                onTimerFinished()
+                loadConfeti()
+                Toast.makeText(this@MainActivity, "Countdown Completed", Toast.LENGTH_LONG).show()
+            }
+
         }.start()
     }
 
@@ -207,6 +224,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //    Handles the congratulations flower for completing the Timer set
+    private fun loadConfeti() {
+        binding.viewKonfetti.build()
+            .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+            .setDirection(0.0, 359.0)
+            .setSpeed(1f, 5f)
+            .setFadeOutEnabled(true)
+            .setTimeToLive(2000L)
+            .addShapes(Shape.Square, Shape.Circle)
+            .addSizes(Size(12))
+            .setPosition(-50f, binding.viewKonfetti.width + 50f, -50f, -50f)
+            .streamFor(300, 5000L)
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -218,7 +250,12 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                Intent(this, SettingsActivity::class.java).also {
+                    startActivity(it)
+                }
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
